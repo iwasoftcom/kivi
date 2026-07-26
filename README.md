@@ -16,7 +16,9 @@ Kivi is a database that stores every change as an event. It can reconstruct data
 
 ## Download
 
-The latest packages (Windows / Debian·Ubuntu / RHEL·Fedora) are on the **[Releases](https://github.com/iwasoftcom/kivi/releases/latest)** page.
+Windows, Debian/Ubuntu and RHEL/Fedora packages are on the product page:
+**https://iwasoft.com/products/kivi**
+
 Docker: `docker pull iwasoftcom/kivi:latest`
 
 ## Documentation
