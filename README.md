@@ -1,25 +1,35 @@
 # Kivi
 
-Kendi hesabını verebilen, olay tabanlı veritabanı.
+The event-based database that can account for itself.
 
-> Kurumsal yazılım · **iwasoft** — ürün sayfası: https://iwasoft.com/products/kivi
+> Enterprise software by **iwasoft** — product page: https://iwasoft.com/products/kivi
 
-## İndir
+## What is Kivi?
 
-En güncel paketler (Windows / Debian·Ubuntu / RHEL·Fedora) **[Releases](https://github.com/iwasoftcom/kivi/releases/latest)** altındadır.
+Kivi is a database that stores every change as an event. It can reconstruct data as of any moment and fully answer "why is this value what it is?" — a natural foundation for audit, compliance and debugging.
+
+**Highlights**
+
+- Event-sourcing architecture
+- Time-travel queries
+- Complete audit trail
+
+## Download
+
+The latest packages (Windows / Debian·Ubuntu / RHEL·Fedora) are on the **[Releases](https://github.com/iwasoftcom/kivi/releases/latest)** page.
 Docker: `docker pull iwasoftcom/kivi:latest`
 
-## Dökümanlar
+## Documentation
 
-7 dilde dökümantasyon [`docs/`](./docs) klasöründedir (kanonik: İngilizce).
+Documentation is available in 7 languages in [`docs/`](./docs) (canonical source: English).
 
-## Kod örnekleri
+## Code examples
 
-Kullanım örnekleri [`examples/`](./examples) klasöründedir.
+Usage examples are in [`examples/`](./examples).
 
-## Destek
+## Support
 
-Yazılım ücretsizdir; kurumsal destek için: https://iwasoft.com/iletisim
+The software is free to use; for enterprise support: https://iwasoft.com/contact
 
 ---
-_Bu repo bir dağıtım (paket + döküman + örnek) reposudur — kaynak kodu içermez._
+_This is a distribution repository — packages, documentation and examples. It does **not** contain source code._
