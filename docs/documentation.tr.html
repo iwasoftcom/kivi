@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kivi — Dokümantasyon</title>
+<style>
+:root{
+  --bg:#FAFAF7; --ink:#141412; --muted:#6b6b66; --accent:#4E9F3D;
+  --amber:#B45309; --card:#ffffff; --line:#e4e4de; --code-bg:#f1f1ec;
+  --accent-soft:#4e9f3d1a;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#161614; --ink:#ecece8; --muted:#9a9a92; --accent:#6fbf5a;
+         --amber:#d99a4e; --card:#1e1e1b; --line:#33332e; --code-bg:#232320;
+         --accent-soft:#6fbf5a22; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 -apple-system,"Segoe UI",Roboto,"Inter",sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:2.4rem 1.3rem 4rem}
+header{border-bottom:1px solid var(--line);padding-bottom:1.4rem;margin-bottom:2rem}
+.brand{font-size:2.1rem;font-weight:800;letter-spacing:-.01em}
+.tag{color:var(--muted);margin-top:.25rem}
+.lede{font-size:1.12rem;margin:1rem 0 0}
+h2{font-size:1.32rem;margin:2.4rem 0 .8rem;padding-top:.4rem}
+h3{font-size:1.05rem;margin:1.4rem 0 .5rem}
+p{margin:.7rem 0}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.1em .38em;border-radius:5px;
+  font:0.86em ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:9px;
+  padding:.9rem 1rem;overflow-x:auto}
+pre code{background:none;padding:0;font-size:.85rem;line-height:1.55}
+:root[dir="rtl"] pre, [dir="rtl"] pre{direction:ltr;text-align:left}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:.5rem .65rem;text-align:start;vertical-align:top}
+th{background:var(--accent-soft)}
+ul{padding-inline-start:1.3rem}
+li{margin:.3rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;margin:1rem 0}
+.card{border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;background:var(--card)}
+.card b{color:var(--accent)}
+.note{border-inline-start:3px solid var(--accent);background:var(--accent-soft);
+  padding:.7rem 1rem;border-radius:0 8px 8px 0;margin:1.2rem 0}
+:root[dir="rtl"] .note{border-radius:8px 0 0 8px}
+.dg{width:100%;height:auto;margin:1rem 0}
+.dg .box{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.dg .band{fill:var(--accent-soft);stroke:var(--line);stroke-width:1.5}
+.dg .b{fill:var(--ink);font:600 14px sans-serif}
+.dg .m{fill:var(--muted);font:12px sans-serif}
+.dg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+footer{border-top:1px solid var(--line);margin-top:3rem;padding-top:1.2rem;
+  color:var(--muted);font-size:.9rem}
+.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">Kivi</div>
+  <div class="tag">fişlerini gösteren veritabanı · v1.1.0 · biçim v2</div>
+  <p class="lede">Saf Go ile yazılmış bir olay-defteri veritabanı — verdiği her
+  cevabın hesabını verebilen tek statik ikili.</p>
+</header>
+
+<h2 id="what">Kivi nedir</h2>
+<p>Kivi yalnızca <b>olayları</b> saklar — değişmez, özet-zincirli kayıtlar.
+Güncel duruma benzeyen her şey (bir tablo, bir graf, bir zaman serisi, bir
+vektör indeksi) bir <b>görünümdür</b>: bu olayların bir katlaması, talep üzerine
+yeniden derlenen ve her an atılabilir. Her cevap bir <b>iz</b> (onu kuran kayıt
+numaraları) ve bir <b>kapsam</b> (geçmişe ne kadar baktığı) taşır ve
+<code>why</code> fiş kayıtlarının kendisini döndürür. Eksik veri dürüst bir
+rettir, asla bir uydurma değil.</p>
+
+<h2 id="principles">Üç ilke</h2>
+<div class="grid">
+  <div class="card"><b>Kalıcı olan yalnız olaylardır.</b><br>UPDATE yoktur. Yeni
+  olgular eklenir; geçmiş asla yeniden yazılmaz. Tarihçe birinci sınıftır.</div>
+  <div class="card"><b>Temsiller derlenir.</b><br><code>derived/</code>'i silmek
+  her zaman meşrudur: cevaplar değişmez, yalnız bir sonraki sorgu yavaşlar.</div>
+  <div class="card"><b>İzsiz cevap yok.</b><br>İzsiz bir cevap temsil edilemez —
+  çekirdekte ve her SDK'da. Hiçbir şey uydurulmaz.</div>
+</div>
+
+<h2 id="different">Normal bir veritabanından farkı</h2>
+<table>
+<tr><th></th><th>Tipik bir veritabanı</th><th>Kivi</th></tr>
+<tr><td>Kalıcı olan</td><td>Güncel durum; UPDATE geçmişi yok eder</td><td>Olaylar; durum onlardan yeniden derlenir</td></tr>
+<tr><td>Cevaplar</td><td>Çıplak değerler</td><td>Değer + iz + kapsam; <code>why</code> fişleri getirir</td></tr>
+<tr><td>Zaman-noktası</td><td>Fotoğraflar ve ek mekanizma</td><td>Tasarımı gereği bedava: N kaydına kadar katla (<code>--as-of</code>)</td></tr>
+<tr><td>Bütünlük</td><td>Varsayılır</td><td>Doğrulanır: SHA-256 zinciri + Ed25519 mühürleri; istemciler sunucuyu yeniden doğrular</td></tr>
+<tr><td>Silme</td><td>Satır gitti, hikâye gitti</td><td>Kripto-silme: anahtar yok edilir, baytlar değişmez, silme fişlenir</td></tr>
+</table>
+
+<h2 id="quickstart">Hızlı başlangıç</h2>
+<p>Sunucuyu çalıştır (tek statik ikili ya da konteyner imajı):</p>
+<pre><code># Docker
+docker run -p 4741:4741 -p 4742:4742 -e KIVI_TOKEN=change-me iwasoftcom/kivi:1.1.0
+
+# ya da ikili
+KIVI_DATA=/var/lib/kivi/kivi.ledger KIVI_TOKEN=change-me kivid</code></pre>
+<p>Bir olay ekle ve geri oku — cevap iziyle birlikte gelir:</p>
+<pre><code>kivi append ./kivi.ledger property '{"subject":"dog","attribute":"sound","value":"woof"}'
+kivi table  ./kivi.ledger dog sound
+# → {"scope":0,"trace":[0],"value":"woof"}
+
+kivi verify ./kivi.ledger        # zinciri yeniden özetle, her mührü doğrula
+kivi why    ./kivi.ledger 0      # cevabın arkasındaki fiş</code></pre>
+<p>İstemciler aynı sözleşmeyi <b>altı dilde</b> konuşur — Go, Python,
+Java&nbsp;&amp;&nbsp;Kotlin, Rust, Node.js ve .NET — tipli
+"entity&nbsp;ver, entity&nbsp;al" erişimi ve varsayılan açık istemci-tarafı
+doğrulamayla.</p>
+
+<h2 id="features">İçinde ne var</h2>
+<div class="grid">
+  <div class="card"><b>İzli cevaplar</b><br>Her değer, onu kuran olayları
+  gösterir; izsiz bir cevap oluşturulamaz.</div>
+  <div class="card"><b>Zaman yolculuğu</b><br>"N kaydında ne biliyorduk?" tek
+  bir sınırlı replay — fotoğraf yok, migration yok (<code>--as-of</code>).</div>
+  <div class="card"><b>Doğrulanmış bütünlük</b><br>SHA-256 özet zinciri +
+  Ed25519 mühürleri; tek bir bozuk bayt yakalanır ve adıyla söylenir.</div>
+  <div class="card"><b>Kripto-silme</b><br>Kayıt başına anahtar; silmek anahtarı
+  yok eder, zinciri geçerli tutar ve silmenin kendisini fişler.</div>
+  <div class="card"><b>ACID, ekleme-tabanlı biçim</b><br>Olay başına atomiklik,
+  sıralı yazmalar, snapshot okumalar, grup-commit <code>fsync</code> dayanıklılığı.</div>
+  <div class="card"><b>Küme &amp; federasyon</b><br>Çoğunluk onaylı failover,
+  okuma kopyaları ve bağımsız defterler arasında karşılıklı tanıklık.</div>
+  <div class="card"><b>Yönetim paneli &amp; kimlik</b><br>Gömülü UI, fişli
+  yapılandırma, kullanıcı/rol/oturum ve adlı, iptal edilebilir API anahtarları.</div>
+  <div class="card"><b>LLM kapısı (MCP)</b><br>Bir yapay-zekâ ajanına
+  kaynağını gösteren bir bellek verir; eksik bir olgu uydurulmaz, reddedilir.</div>
+</div>
+
+<div class="grid">
+  <div class="card"><b>Çok kiracılı, talep üzerine</b><br>Tek süreçte birbirinden yalıtılmış birden çok kiracı — ve yenisi çalışma anında, admin API üzerinden, fişlenerek açılabilir; yeniden başlatma yok.</div>
+  <div class="card"><b>Servis olarak çalışır</b><br>Linux'ta systemd (.deb/.rpm), Windows'ta installer'dan gerçek bir Windows servisi — açılışta başlar, dururken düzgün boşaltır.</div>
+</div>
+
+<h2 id="admin">Yönetim paneli</h2>
+<p>Her sunucu, ops portunda gömülü bir web paneli getirir (ayrı kurulum yok).
+<code>https://&lt;host&gt;:4742/admin/</code> adresini aç ve bir kullanıcı
+hesabıyla giriş yap — oradan, canlı ve veri düzlemine dokunmadan şunları
+yapabilirsin:</p>
+<ul>
+  <li><b>Genel bakış &amp; Dönemler</b> — sağlık, kayıt ve mühür sayıları, rotasyon.</li>
+  <li><b>Kayıtlar &amp; Arama</b> — eklemelerin canlı akışı, artı anlamsal arama.</li>
+  <li><b>Küme &amp; Federasyon</b> — topoloji, failover ve tanıklık durumu.</li>
+  <li><b>Kullanıcılar &amp; API anahtarları</b> — hesap ve rol oluştur, anahtar ver/iptal et.</li>
+  <li><b>Config</b> — limitleri ve ayarları yeniden ayarla; her değişiklik deftere fişlenir (sırlar asla fişlenmez).</li>
+</ul>
+
+<h2 id="architecture">Mimari</h2>
+<p>Tek süreç, iki ağ kapısı, katı bir bağımlılık kuralı: çekirdek yalnız Go
+standart kütüphanesini kullanır; gRPC kenarda yaşar. Diskte tam olarak tek tür
+kalıcı gerçek vardır — olay defteri — ve geri kalan her şey atılabilir.</p>
+<figure>
+<svg class="dg" viewBox="0 0 760 300" role="img" aria-label="Kivi mimarisi: istemciler, iki kapı, çekirdek, disk">
+  <rect class="box" x="20" y="16" width="340" height="52" rx="9"/>
+  <text class="b" x="190" y="40" text-anchor="middle">CLI · altı-dilli SDK'lar</text>
+  <text class="m" x="190" y="58" text-anchor="middle">güvenmeyen: istemci-tarafı doğrular</text>
+  <rect class="box" x="400" y="16" width="340" height="52" rx="9"/>
+  <text class="b" x="570" y="40" text-anchor="middle">Yönetim paneli · LLM ajanları (MCP)</text>
+  <text class="m" x="570" y="58" text-anchor="middle">gömülü UI · kaynak-gösteren bellek</text>
+  <path class="ln" d="M190 68 V96"/>
+  <path class="ln" d="M570 68 V96"/>
+  <rect class="box" x="20" y="100" width="340" height="48" rx="9"/>
+  <text class="b" x="190" y="129" text-anchor="middle">gRPC veri düzlemi · :4741</text>
+  <rect class="box" x="400" y="100" width="340" height="48" rx="9"/>
+  <text class="b" x="570" y="129" text-anchor="middle">ops HTTP · :4742</text>
+  <path class="ln" d="M190 148 V176"/>
+  <path class="ln" d="M570 148 V176"/>
+  <rect class="band" x="20" y="180" width="720" height="60" rx="10"/>
+  <text class="b" x="380" y="205" text-anchor="middle">çekirdek (Go stdlib): defter · görünümler · iz · mühür · kimlik</text>
+  <text class="m" x="380" y="225" text-anchor="middle">cevaplar sorgu anında derlenir — türetilen hiçbir şey birincil değil</text>
+  <path class="ln" d="M380 240 V268"/>
+  <rect class="box" x="230" y="272" width="300" height="24" rx="7"/>
+  <text class="b" x="380" y="289" text-anchor="middle">disk: yalnızca-ekleme olay defteri (+ mühürler)</text>
+</svg>
+</figure>
+
+<h2 id="more">Tam dokümantasyon &amp; kaynak</h2>
+<ul>
+  <li><b><a href="reference.en.html">Tam referans (İngilizce)</a></b> — her
+  özellik, CLI ve gRPC API'si, ortam değişkenleri, nasıl-yapılır kılavuzları ve
+  dil-sekmeli kod örnekleri.</li>
+  <li><b>Uyumluluk:</b> gRPC API'si, disk biçimi v2 ve SDK yüzeyi bir SemVer
+  sözleşmesidir — major sürüm artışı olmadan kırılmazlar.</li>
+  <li><b>Dürüst durum:</b> henüz bağımsız güvenlik denetiminden geçmedi; henüz
+  üretim kilometresi yok. Bunlar birer ifşadır, kararlılık sözüne çekince değil.</li>
+</ul>
+
+<footer>
+  Kivi v1.1.0 · disk biçimi v2 (donmuş sözleşme, altın vektörler) · Go stdlib
+  çekirdek, kenarlarda gRPC · tek statik ikili. © iwasoft.
+</footer>
+
+</div>
+</body>
+</html>

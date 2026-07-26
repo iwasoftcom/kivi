@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kivi — Documentación</title>
+<style>
+:root{
+  --bg:#FAFAF7; --ink:#141412; --muted:#6b6b66; --accent:#4E9F3D;
+  --amber:#B45309; --card:#ffffff; --line:#e4e4de; --code-bg:#f1f1ec;
+  --accent-soft:#4e9f3d1a;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#161614; --ink:#ecece8; --muted:#9a9a92; --accent:#6fbf5a;
+         --amber:#d99a4e; --card:#1e1e1b; --line:#33332e; --code-bg:#232320;
+         --accent-soft:#6fbf5a22; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 -apple-system,"Segoe UI",Roboto,"Inter",sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:2.4rem 1.3rem 4rem}
+header{border-bottom:1px solid var(--line);padding-bottom:1.4rem;margin-bottom:2rem}
+.brand{font-size:2.1rem;font-weight:800;letter-spacing:-.01em}
+.tag{color:var(--muted);margin-top:.25rem}
+.lede{font-size:1.12rem;margin:1rem 0 0}
+h2{font-size:1.32rem;margin:2.4rem 0 .8rem;padding-top:.4rem}
+h3{font-size:1.05rem;margin:1.4rem 0 .5rem}
+p{margin:.7rem 0}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.1em .38em;border-radius:5px;
+  font:0.86em ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:9px;
+  padding:.9rem 1rem;overflow-x:auto}
+pre code{background:none;padding:0;font-size:.85rem;line-height:1.55}
+:root[dir="rtl"] pre, [dir="rtl"] pre{direction:ltr;text-align:left}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:.5rem .65rem;text-align:start;vertical-align:top}
+th{background:var(--accent-soft)}
+ul{padding-inline-start:1.3rem}
+li{margin:.3rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;margin:1rem 0}
+.card{border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;background:var(--card)}
+.card b{color:var(--accent)}
+.note{border-inline-start:3px solid var(--accent);background:var(--accent-soft);
+  padding:.7rem 1rem;border-radius:0 8px 8px 0;margin:1.2rem 0}
+:root[dir="rtl"] .note{border-radius:8px 0 0 8px}
+.dg{width:100%;height:auto;margin:1rem 0}
+.dg .box{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.dg .band{fill:var(--accent-soft);stroke:var(--line);stroke-width:1.5}
+.dg .b{fill:var(--ink);font:600 14px sans-serif}
+.dg .m{fill:var(--muted);font:12px sans-serif}
+.dg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+footer{border-top:1px solid var(--line);margin-top:3rem;padding-top:1.2rem;
+  color:var(--muted);font-size:.9rem}
+.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">Kivi</div>
+  <div class="tag">la base de datos que muestra sus recibos · v1.1.0 · formato v2</div>
+  <p class="lede">Una base de datos de registro de eventos en Go puro — un único
+  binario estático capaz de rendir cuentas de cada respuesta que da.</p>
+</header>
+
+<h2 id="what">Qué es Kivi</h2>
+<p>Kivi almacena solo <b>eventos</b> — registros inmutables, encadenados por
+hash. Todo lo que parece estado actual (una tabla, un grafo, una serie temporal,
+un índice vectorial) es una <b>vista</b>: un plegado sobre esos eventos,
+recompilado bajo demanda y descartable en cualquier momento. Cada respuesta
+lleva una <b>traza</b> (los números de registro que la establecen) y un
+<b>alcance</b> (hasta dónde miró en la historia), y <code>why</code> devuelve
+los propios registros-recibo. Un dato ausente es un rechazo honesto, nunca una
+invención.</p>
+
+<h2 id="principles">Los tres principios</h2>
+<div class="grid">
+  <div class="card"><b>Solo los eventos son duraderos.</b><br>No hay UPDATE. Los
+  hechos nuevos se anexan; el pasado nunca se reescribe. La historia es de
+  primera clase.</div>
+  <div class="card"><b>Las representaciones se compilan.</b><br>Borrar
+  <code>derived/</code> siempre es legítimo: las respuestas no cambian, solo la
+  siguiente consulta es más lenta.</div>
+  <div class="card"><b>Ninguna respuesta sin traza.</b><br>Una respuesta sin
+  traza es irrepresentable — en el núcleo y en cada SDK. Nada se inventa.</div>
+</div>
+
+<h2 id="different">En qué se diferencia de una base de datos normal</h2>
+<table>
+<tr><th></th><th>Una base de datos típica</th><th>Kivi</th></tr>
+<tr><td>Qué es duradero</td><td>El estado actual; UPDATE destruye el pasado</td><td>Los eventos; el estado se recompila de ellos</td></tr>
+<tr><td>Respuestas</td><td>Valores desnudos</td><td>Valor + traza + alcance; <code>why</code> obtiene los recibos</td></tr>
+<tr><td>Punto en el tiempo</td><td>Instantáneas y maquinaria extra</td><td>Gratis por diseño: plegar hasta el registro N (<code>--as-of</code>)</td></tr>
+<tr><td>Integridad</td><td>Supuesta</td><td>Verificada: cadena SHA-256 + sellos Ed25519; los clientes reverifican el servidor</td></tr>
+<tr><td>Borrado</td><td>Fila fuera, historia fuera</td><td>Borrado cripto: clave destruida, bytes intactos, borrado registrado</td></tr>
+</table>
+
+<h2 id="quickstart">Inicio rápido</h2>
+<p>Ejecute el servidor (binario estático único o imagen de contenedor):</p>
+<pre><code># Docker
+docker run -p 4741:4741 -p 4742:4742 -e KIVI_TOKEN=change-me iwasoftcom/kivi:1.1.0
+
+# o el binario
+KIVI_DATA=/var/lib/kivi/kivi.ledger KIVI_TOKEN=change-me kivid</code></pre>
+<p>Anexe un evento y léalo de vuelta — la respuesta llega con su traza:</p>
+<pre><code>kivi append ./kivi.ledger property '{"subject":"dog","attribute":"sound","value":"woof"}'
+kivi table  ./kivi.ledger dog sound
+# → {"scope":0,"trace":[0],"value":"woof"}
+
+kivi verify ./kivi.ledger        # rehashear la cadena, verificar cada sello
+kivi why    ./kivi.ledger 0      # el recibo detrás de la respuesta</code></pre>
+<p>Los clientes hablan el mismo contrato en <b>seis lenguajes</b> — Go, Python,
+Java&nbsp;&amp;&nbsp;Kotlin, Rust, Node.js y .NET — con acceso tipado
+«entidad entra, entidad sale» y verificación del lado del cliente activada por
+defecto.</p>
+
+<h2 id="features">Qué incluye</h2>
+<div class="grid">
+  <div class="card"><b>Respuestas trazadas</b><br>Cada valor cita los eventos
+  que lo establecen; una respuesta sin traza no puede construirse.</div>
+  <div class="card"><b>Viaje en el tiempo</b><br>«¿Qué sabíamos en el registro
+  N?» es un único replay acotado — sin instantáneas, sin migraciones (<code>--as-of</code>).</div>
+  <div class="card"><b>Integridad verificada</b><br>Cadena de hash SHA-256 +
+  sellos Ed25519; un solo byte alterado se detecta y se nombra.</div>
+  <div class="card"><b>Borrado cripto</b><br>Claves por registro; borrar
+  destruye la clave, mantiene la cadena válida y registra el borrado mismo.</div>
+  <div class="card"><b>ACID, forma append-only</b><br>Atomicidad por evento,
+  escrituras serializadas, lecturas por instantánea, durabilidad por
+  group-commit <code>fsync</code>.</div>
+  <div class="card"><b>Clúster &amp; federación</b><br>Conmutación por error con
+  commit mayoritario, réplicas de lectura y testimonio mutuo entre registros
+  independientes.</div>
+  <div class="card"><b>Panel de admin &amp; identidad</b><br>UI integrada,
+  configuración registrada, usuarios/roles/sesiones y claves de API con nombre y
+  revocables.</div>
+  <div class="card"><b>Puerta LLM (MCP)</b><br>Da a un agente de IA una memoria
+  que cita sus fuentes; un hecho ausente se rechaza, no se alucina.</div>
+</div>
+
+<div class="grid">
+  <div class="card"><b>Multiinquilino, bajo demanda</b><br>Varios inquilinos aislados en un proceso — y uno nuevo se abre en tiempo de ejecución vía la API de administración, con recibo y sin reinicio.</div>
+  <div class="card"><b>Se ejecuta como servicio</b><br>systemd en Linux (.deb/.rpm) y un servicio real de Windows desde el instalador — arranque al inicio, drenaje limpio al parar.</div>
+</div>
+
+<h2 id="admin">Panel de administración</h2>
+<p>Cada servidor incluye un panel web integrado (sin despliegue aparte) en el
+puerto de ops. Abra <code>https://&lt;host&gt;:4742/admin/</code> e inicie sesión
+con una cuenta de usuario — desde ahí, en vivo y sin tocar el plano de datos,
+puede:</p>
+<ul>
+  <li><b>Resumen &amp; Periodos</b> — salud, recuentos de registros y sellos, rotación.</li>
+  <li><b>Registros &amp; Búsqueda</b> — un flujo en vivo de los anexados, más búsqueda semántica.</li>
+  <li><b>Clúster &amp; Federación</b> — topología, estado de conmutación y de testimonio.</li>
+  <li><b>Usuarios &amp; Claves de API</b> — crear cuentas y roles, emitir y revocar claves.</li>
+  <li><b>Configuración</b> — reajustar límites y ajustes; cada cambio se registra en el registro (los secretos nunca).</li>
+</ul>
+
+<h2 id="architecture">Arquitectura</h2>
+<p>Un proceso, dos puertas de red, una regla de dependencia estricta: el núcleo
+usa solo la biblioteca estándar de Go; gRPC vive en el borde. En el disco hay
+exactamente un tipo de verdad duradera — el registro de eventos — y todo lo
+demás es descartable.</p>
+<figure>
+<svg class="dg" viewBox="0 0 760 300" role="img" aria-label="Arquitectura Kivi: clientes, dos puertas, núcleo, disco">
+  <rect class="box" x="20" y="16" width="340" height="52" rx="9"/>
+  <text class="b" x="190" y="40" text-anchor="middle">CLI · SDK en seis lenguajes</text>
+  <text class="m" x="190" y="58" text-anchor="middle">desconfiado: verifica en el cliente</text>
+  <rect class="box" x="400" y="16" width="340" height="52" rx="9"/>
+  <text class="b" x="570" y="40" text-anchor="middle">Panel de admin · agentes LLM (MCP)</text>
+  <text class="m" x="570" y="58" text-anchor="middle">UI integrada · memoria que cita</text>
+  <path class="ln" d="M190 68 V96"/>
+  <path class="ln" d="M570 68 V96"/>
+  <rect class="box" x="20" y="100" width="340" height="48" rx="9"/>
+  <text class="b" x="190" y="129" text-anchor="middle">plano de datos gRPC · :4741</text>
+  <rect class="box" x="400" y="100" width="340" height="48" rx="9"/>
+  <text class="b" x="570" y="129" text-anchor="middle">ops HTTP · :4742</text>
+  <path class="ln" d="M190 148 V176"/>
+  <path class="ln" d="M570 148 V176"/>
+  <rect class="band" x="20" y="180" width="720" height="60" rx="10"/>
+  <text class="b" x="380" y="205" text-anchor="middle">núcleo (Go stdlib): registro · vistas · traza · sello · identidad</text>
+  <text class="m" x="380" y="225" text-anchor="middle">respuestas compiladas al consultar — nada derivado es primario</text>
+  <path class="ln" d="M380 240 V268"/>
+  <rect class="box" x="230" y="272" width="300" height="24" rx="7"/>
+  <text class="b" x="380" y="289" text-anchor="middle">disco: registro de eventos append-only (+ sellos)</text>
+</svg>
+</figure>
+
+<h2 id="more">Documentación completa &amp; código fuente</h2>
+<ul>
+  <li><b><a href="reference.en.html">Referencia completa (inglés)</a></b> —
+  cada función, la API de CLI y gRPC, las variables de entorno, las guías
+  prácticas y ejemplos de código con pestañas por lenguaje.</li>
+  <li><b>Compatibilidad:</b> la API gRPC, el formato de disco v2 y la superficie
+  del SDK son un contrato SemVer — no se rompen sin un salto de versión mayor.</li>
+  <li><b>Estado honesto:</b> aún sin auditoría de seguridad independiente; aún
+  sin kilometraje en producción. Son divulgaciones, no reservas sobre la promesa
+  de estabilidad.</li>
+</ul>
+
+<footer>
+  Kivi v1.1.0 · formato de disco v2 (contrato congelado, golden vectors) ·
+  núcleo en Go stdlib, gRPC en los bordes · un binario estático. © iwasoft.
+</footer>
+
+</div>
+</body>
+</html>

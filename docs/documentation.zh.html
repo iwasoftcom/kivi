@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kivi — 文档</title>
+<style>
+:root{
+  --bg:#FAFAF7; --ink:#141412; --muted:#6b6b66; --accent:#4E9F3D;
+  --amber:#B45309; --card:#ffffff; --line:#e4e4de; --code-bg:#f1f1ec;
+  --accent-soft:#4e9f3d1a;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#161614; --ink:#ecece8; --muted:#9a9a92; --accent:#6fbf5a;
+         --amber:#d99a4e; --card:#1e1e1b; --line:#33332e; --code-bg:#232320;
+         --accent-soft:#6fbf5a22; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.7 -apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:2.4rem 1.3rem 4rem}
+header{border-bottom:1px solid var(--line);padding-bottom:1.4rem;margin-bottom:2rem}
+.brand{font-size:2.1rem;font-weight:800;letter-spacing:-.01em}
+.tag{color:var(--muted);margin-top:.25rem}
+.lede{font-size:1.12rem;margin:1rem 0 0}
+h2{font-size:1.32rem;margin:2.4rem 0 .8rem;padding-top:.4rem}
+h3{font-size:1.05rem;margin:1.4rem 0 .5rem}
+p{margin:.7rem 0}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+code{background:var(--code-bg);padding:.1em .38em;border-radius:5px;
+  font:0.86em ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:9px;
+  padding:.9rem 1rem;overflow-x:auto}
+pre code{background:none;padding:0;font-size:.85rem;line-height:1.55}
+:root[dir="rtl"] pre, [dir="rtl"] pre{direction:ltr;text-align:left}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:.5rem .65rem;text-align:start;vertical-align:top}
+th{background:var(--accent-soft)}
+ul{padding-inline-start:1.3rem}
+li{margin:.3rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem;margin:1rem 0}
+.card{border:1px solid var(--line);border-radius:10px;padding:.9rem 1rem;background:var(--card)}
+.card b{color:var(--accent)}
+.note{border-inline-start:3px solid var(--accent);background:var(--accent-soft);
+  padding:.7rem 1rem;border-radius:0 8px 8px 0;margin:1.2rem 0}
+:root[dir="rtl"] .note{border-radius:8px 0 0 8px}
+.dg{width:100%;height:auto;margin:1rem 0}
+.dg .box{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+.dg .band{fill:var(--accent-soft);stroke:var(--line);stroke-width:1.5}
+.dg .b{fill:var(--ink);font:600 14px sans-serif}
+.dg .m{fill:var(--muted);font:12px sans-serif}
+.dg .ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+footer{border-top:1px solid var(--line);margin-top:3rem;padding-top:1.2rem;
+  color:var(--muted);font-size:.9rem}
+.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">Kivi</div>
+  <div class="tag">会出示回执的数据库 · v1.1.0 · 格式 v2</div>
+  <p class="lede">一个用纯 Go 编写的事件账本数据库——单一静态二进制文件，能为它给出的每一个答案负责。</p>
+</header>
+
+<h2 id="what">Kivi 是什么</h2>
+<p>Kivi 只存储<b>事件</b>——不可变、哈希链接的记录。任何看起来像当前状态的东西
+（一张表、一个图、一条时间序列、一个向量索引）都是<b>视图</b>：对这些事件的一次折叠，
+按需重新编译，随时可丢弃。每个答案都带有<b>溯源</b>（确立它的记录编号）和
+<b>范围</b>（它回看了多远的历史），而 <code>why</code> 会返回回执记录本身。
+缺失的数据是诚实的拒绝，绝不是编造。</p>
+
+<h2 id="principles">三条原则</h2>
+<div class="grid">
+  <div class="card"><b>只有事件是持久的。</b><br>没有 UPDATE。新事实被追加；
+  过去从不被改写。历史是一等公民。</div>
+  <div class="card"><b>表示是被编译的。</b><br>删除 <code>derived/</code> 永远合法：
+  答案不变，只是下一次查询更慢。</div>
+  <div class="card"><b>没有溯源就没有答案。</b><br>无溯源的答案无法表示——
+  在内核和每个 SDK 中皆然。没有任何东西是编造的。</div>
+</div>
+
+<h2 id="different">它与普通数据库的区别</h2>
+<table>
+<tr><th></th><th>典型数据库</th><th>Kivi</th></tr>
+<tr><td>什么是持久的</td><td>当前状态；UPDATE 摧毁过去</td><td>事件；状态由其重新编译</td></tr>
+<tr><td>答案</td><td>赤裸的值</td><td>值 + 溯源 + 范围；<code>why</code> 取回回执</td></tr>
+<tr><td>时间点</td><td>快照与额外机制</td><td>设计上免费：折叠到记录 N（<code>--as-of</code>）</td></tr>
+<tr><td>完整性</td><td>假定</td><td>已验证：SHA-256 链 + Ed25519 封印；客户端重新验证服务器</td></tr>
+<tr><td>删除</td><td>行没了，故事也没了</td><td>加密擦除：密钥销毁、字节不变、擦除本身留有回执</td></tr>
+</table>
+
+<h2 id="quickstart">快速开始</h2>
+<p>运行服务器（单一静态二进制文件，或容器镜像）：</p>
+<pre><code># Docker
+docker run -p 4741:4741 -p 4742:4742 -e KIVI_TOKEN=change-me iwasoftcom/kivi:1.1.0
+
+# 或使用二进制文件
+KIVI_DATA=/var/lib/kivi/kivi.ledger KIVI_TOKEN=change-me kivid</code></pre>
+<p>追加一个事件并读回——答案会带着它的溯源到来：</p>
+<pre><code>kivi append ./kivi.ledger property '{"subject":"dog","attribute":"sound","value":"woof"}'
+kivi table  ./kivi.ledger dog sound
+# → {"scope":0,"trace":[0],"value":"woof"}
+
+kivi verify ./kivi.ledger        # 重新哈希整条链，校验每一个封印
+kivi why    ./kivi.ledger 0      # 答案背后的回执</code></pre>
+<p>客户端以<b>六种语言</b>遵循同一契约——Go、Python、
+Java&nbsp;&amp;&nbsp;Kotlin、Rust、Node.js 和 .NET——提供类型化的
+“实体进、实体出”访问，并默认开启客户端验证。</p>
+
+<h2 id="features">内含什么</h2>
+<div class="grid">
+  <div class="card"><b>可溯源的答案</b><br>每个值都引用确立它的事件；
+  无溯源的答案无法构造。</div>
+  <div class="card"><b>时间旅行</b><br>“我们在记录 N 时知道什么？”是一次有界回放——
+  无快照、无迁移（<code>--as-of</code>）。</div>
+  <div class="card"><b>已验证的完整性</b><br>SHA-256 哈希链 + Ed25519 封印；
+  哪怕单个字节被篡改也会被抓出并指名。</div>
+  <div class="card"><b>加密擦除</b><br>每条记录一把密钥；擦除会销毁密钥、
+  保持链有效，并为擦除本身留下回执。</div>
+  <div class="card"><b>ACID（仅追加形态）</b><br>逐事件原子性、串行化写入、
+  快照读取、组提交 <code>fsync</code> 持久性。</div>
+  <div class="card"><b>集群与联邦</b><br>多数派提交的故障转移、只读副本，
+  以及独立账本之间的相互见证。</div>
+  <div class="card"><b>管理面板与身份</b><br>内嵌 UI、留有回执的配置、
+  用户/角色/会话，以及具名、可吊销的 API 密钥。</div>
+  <div class="card"><b>LLM 门（MCP）</b><br>为 AI 智能体提供一段会引用来源的记忆；
+  缺失的事实会被拒绝，而非臆造。</div>
+</div>
+
+<div class="grid">
+  <div class="card"><b>多租户，按需开通</b><br>一个进程中运行多个彼此隔离的租户——新租户可在运行时通过管理 API 开通，留有回执，无需重启。</div>
+  <div class="card"><b>以服务方式运行</b><br>Linux 上用 systemd（.deb/.rpm），Windows 上由安装程序注册为真正的 Windows 服务——开机自启，停止时优雅收尾。</div>
+</div>
+
+<h2 id="admin">管理面板</h2>
+<p>每个服务器都内置一个 Web 管理面板（无需单独部署），位于 ops 端口。打开
+<code>https://&lt;host&gt;:4742/admin/</code> 并用一个用户账户登录——在那里，
+实时且无需触及数据面，你可以：</p>
+<ul>
+  <li><b>概览与周期</b>——健康状况、记录与封印计数、轮换。</li>
+  <li><b>记录与搜索</b>——追加的实时流，外加语义搜索。</li>
+  <li><b>集群与联邦</b>——拓扑、故障转移与见证状态。</li>
+  <li><b>用户与 API 密钥</b>——创建账户和角色，签发与吊销密钥。</li>
+  <li><b>配置</b>——重新调整限额与设置；每次更改都会留有回执写入账本（密钥绝不入账）。</li>
+</ul>
+
+<h2 id="architecture">架构</h2>
+<p>一个进程、两道网络门、一条严格的依赖规则：内核只使用 Go 标准库；
+gRPC 位于边缘。磁盘上恰好只有一种持久真相——事件日志——其余一切都可丢弃。</p>
+<figure>
+<svg class="dg" viewBox="0 0 760 300" role="img" aria-label="Kivi 架构：客户端、两道门、内核、磁盘">
+  <rect class="box" x="20" y="16" width="340" height="52" rx="9"/>
+  <text class="b" x="190" y="40" text-anchor="middle">CLI · 六语言 SDK</text>
+  <text class="m" x="190" y="58" text-anchor="middle">不轻信：在客户端验证</text>
+  <rect class="box" x="400" y="16" width="340" height="52" rx="9"/>
+  <text class="b" x="570" y="40" text-anchor="middle">管理面板 · LLM 智能体（MCP）</text>
+  <text class="m" x="570" y="58" text-anchor="middle">内嵌 UI · 会引用来源的记忆</text>
+  <path class="ln" d="M190 68 V96"/>
+  <path class="ln" d="M570 68 V96"/>
+  <rect class="box" x="20" y="100" width="340" height="48" rx="9"/>
+  <text class="b" x="190" y="129" text-anchor="middle">gRPC 数据面 · :4741</text>
+  <rect class="box" x="400" y="100" width="340" height="48" rx="9"/>
+  <text class="b" x="570" y="129" text-anchor="middle">ops HTTP · :4742</text>
+  <path class="ln" d="M190 148 V176"/>
+  <path class="ln" d="M570 148 V176"/>
+  <rect class="band" x="20" y="180" width="720" height="60" rx="10"/>
+  <text class="b" x="380" y="205" text-anchor="middle">内核（Go 标准库）：账本 · 视图 · 溯源 · 封印 · 身份</text>
+  <text class="m" x="380" y="225" text-anchor="middle">答案在查询时编译——任何派生物都不是主记录</text>
+  <path class="ln" d="M380 240 V268"/>
+  <rect class="box" x="230" y="272" width="300" height="24" rx="7"/>
+  <text class="b" x="380" y="289" text-anchor="middle">磁盘：仅追加的事件日志（+ 封印）</text>
+</svg>
+</figure>
+
+<h2 id="more">完整文档与源代码</h2>
+<ul>
+  <li><b><a href="reference.en.html">完整参考（英文）</a></b>——每一项功能、
+  CLI 与 gRPC API、环境变量、操作指南，以及按语言分页的代码示例。</li>
+  <li><b>兼容性：</b>gRPC API、磁盘格式 v2 与 SDK 表面是一份 SemVer 契约——
+  不经主版本号跃迁不会破坏。</li>
+  <li><b>诚实的状态：</b>尚未经过独立安全审计；尚无生产里程。这些是披露，
+  而非对稳定性承诺的保留。</li>
+</ul>
+
+<footer>
+  Kivi v1.1.0 · 磁盘格式 v2（冻结契约、黄金向量）· Go 标准库内核，
+  边缘用 gRPC · 单一静态二进制文件。© iwasoft。
+</footer>
+
+</div>
+</body>
+</html>
