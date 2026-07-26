@@ -2,7 +2,7 @@
 
 Kendi hesabını verebilen, olay tabanlı veritabanı.
 
-> Kurumsal yazılım · **iwasoft** — ürün sayfası: https://iwasoft.com/urunler/kivi
+> Kurumsal yazılım · **iwasoft** — ürün sayfası: https://iwasoft.com/products/kivi
 
 ## İndir
 
