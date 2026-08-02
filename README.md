@@ -1,18 +1,8 @@
 # Kivi
 
-The event-based database that can account for itself.
+[Türkçe](./README.tr.md) · **English** · [Deutsch](./README.de.md) · [Français](./README.fr.md) · [Español](./README.es.md) · [中文](./README.zh.md) · [العربية](./README.ar.md)
 
 > Enterprise software by **iwasoft** — product page: https://iwasoft.com/products/kivi
-
-## What is Kivi?
-
-Kivi is a database that stores every change as an event. It can reconstruct data as of any moment and fully answer "why is this value what it is?" — a natural foundation for audit, compliance and debugging.
-
-**Highlights**
-
-- Event-sourcing architecture
-- Time-travel queries
-- Complete audit trail
 
 ## Download
 
@@ -23,13 +13,14 @@ Docker: `docker pull iwasoftcom/kivi:latest`
 
 ## Documentation
 
-Documentation is available in 7 languages in [`docs/`](./docs) (canonical source: English).
+Full documentation in this language: [documentation.en.md](./docs/documentation.en.md)
+All languages under `docs/`.
 
 ### AI / LLM documentation
 
-A dedicated, machine-first `documentation.ai.md` for coding agents and LLMs — install, config, API and admin surface in one file, following the [AI Docs Standard](https://iwasoft.com/standards/ai-docs):
+A dedicated, machine-first `documentation.ai.md` for coding agents and LLMs, following the [AI Docs Standard](https://iwasoft.com/standards/ai-docs):
 
-- 🤖 **AI reference:** https://iwasoft.com/products/kivi/1.1.0/docs/documentation.ai.md
+- 🤖 https://iwasoft.com/products/kivi/1.1.0/docs/documentation.ai.md
 
 ## Support
 
